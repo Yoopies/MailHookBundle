@@ -4,15 +4,23 @@ namespace Swm\Bundle\MailHookBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * @Route("/webhook")
  */
-class MailHookController extends Controller
+class MailHookController extends AbstractController
 {
+    private EventDispatcherInterface $eventDispatcher;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
     /**
      * @Route("/{secretSalt}/{service}/catch", name="swm_mailhook_catcher_for_service")
      * @Method({"POST","GET"})
@@ -31,7 +39,7 @@ class MailHookController extends Controller
 
         foreach ($hooks as $hook) {
             $event = $eventHydrator->hydrate($hook, 'Swm\Bundle\MailHookBundle\Event\MailHookEvent');
-            $this->get('event_dispatcher')->dispatch($hook->getEventDispatched(), $event);
+            $this->eventDispatcher->dispatch($event, $hook->getEventDispatched());
         }
 
         return new Response();
@@ -55,7 +63,7 @@ class MailHookController extends Controller
 
         foreach ($hooks as $hook) {
             $event = $eventHydrator->hydrate($hook, 'Swm\Bundle\MailHookBundle\Event\UserMailHookEvent');
-            $this->get('event_dispatcher')->dispatch($hook->getEventDispatched(), $event);
+            $this->eventDispatcher->dispatch($event, $hook->getEventDispatched());
         }
 
         return new Response();
@@ -63,7 +71,7 @@ class MailHookController extends Controller
 
     private function checkSecret($secretSalt)
     {
-        if ($this->container->getParameter('swm_mailhook.secretsalt') !== $secretSalt) {
+        if ($this->getParameter('swm_mailhook.secretsalt') !== $secretSalt) {
             throw new AccessDeniedHttpException("You are not welcome here");
         }
     }
