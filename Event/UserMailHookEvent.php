@@ -2,7 +2,7 @@
 
 namespace Swm\Bundle\MailHookBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserMailHookEvent extends MailHookEvent implements HookEventInterface

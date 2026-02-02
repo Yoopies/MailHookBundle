@@ -2,8 +2,7 @@
 
 namespace Swm\Bundle\MailHookBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Swm\Bundle\MailHookBundle\Hydrator\DefaultHydrator;
 use Swm\Bundle\MailHookBundle\Hydrator\FosUserHydrator;
 use Swm\Bundle\MailHookBundle\Service\MailHookService;
@@ -39,8 +38,7 @@ class MailHookController extends AbstractController
     }
 
     /**
-     * @Route("/{secretSalt}/{service}/catch", name="swm_mailhook_catcher_for_service")
-     * @Method({"POST","GET"})
+     * @Route("/{secretSalt}/{service}/catch", name="swm_mailhook_catcher_for_service", methods={"POST", "GET"})
      */
     public function catcherAction($secretSalt, $service = null)
     {
@@ -59,8 +57,7 @@ class MailHookController extends AbstractController
     }
 
     /**
-     * @Route("/{secretSalt}/{service}/catchuser", name="swm_mailhook_user_catcher_for_service")
-     * @Method({"POST","GET"})
+     * @Route("/{secretSalt}/{service}/catchuser", name="swm_mailhook_user_catcher_for_service", methods={"POST", "GET"})
      */
     public function catchUserAction($secretSalt, $service = null)
     {
