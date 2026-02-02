@@ -24,6 +24,15 @@ services:
     swm.mail_hook.hydrator.default:
         class: "%swm.mail_hook.hydrator.default.class%"
 
+    swm.mail_hook.hydrator.fos_user:
+        class: "%swm.mail_hook.hydrator.fos_user.class%"
+
     swm.mail_hook.controller:
         class: "%swm.mail_hook.controller.class%"
+        arguments:
+            - "@event_dispatcher"
+            - "@swm.mail_hook.service.mail_hook"
+            - "@swm.mail_hook.hydrator.default"
+            - "@swm.mail_hook.hydrator.fos_user"
+            - "@parameter_bag"
 

@@ -4,7 +4,11 @@ namespace Swm\Bundle\MailHookBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Swm\Bundle\MailHookBundle\Hydrator\DefaultHydrator;
+use Swm\Bundle\MailHookBundle\Hydrator\FosUserHydrator;
+use Swm\Bundle\MailHookBundle\Service\MailHookService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -15,10 +19,23 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class MailHookController extends AbstractController
 {
     private EventDispatcherInterface $eventDispatcher;
+    private MailHookService $mailHookService;
+    private DefaultHydrator $defaultHydrator;
+    private FosUserHydrator $fosUserHydrator;
+    private ParameterBagInterface $parameterBag;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher)
-    {
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        MailHookService $mailHookService,
+        DefaultHydrator $defaultHydrator,
+        FosUserHydrator $fosUserHydrator,
+        ParameterBagInterface $parameterBag
+    ) {
         $this->eventDispatcher = $eventDispatcher;
+        $this->mailHookService = $mailHookService;
+        $this->defaultHydrator = $defaultHydrator;
+        $this->fosUserHydrator = $fosUserHydrator;
+        $this->parameterBag = $parameterBag;
     }
 
     /**
@@ -30,15 +47,11 @@ class MailHookController extends AbstractController
         // check if request is granted
         $this->checkSecret($secretSalt);
 
-        $mailHookService = $this->get('swm.mail_hook.service.mail_hook');
-
         // get hooks
-        $hooks = $mailHookService->getHooksForService($service);
-
-        $eventHydrator = $this->get('swm.mail_hook.hydrator.default');
+        $hooks = $this->mailHookService->getHooksForService($service);
 
         foreach ($hooks as $hook) {
-            $event = $eventHydrator->hydrate($hook, 'Swm\Bundle\MailHookBundle\Event\MailHookEvent');
+            $event = $this->defaultHydrator->hydrate($hook, 'Swm\Bundle\MailHookBundle\Event\MailHookEvent');
             $this->eventDispatcher->dispatch($event, $hook->getEventDispatched());
         }
 
@@ -54,15 +67,11 @@ class MailHookController extends AbstractController
         // check if request is granted
         $this->checkSecret($secretSalt);
 
-        $mailHookService = $this->get('swm.mail_hook.service.mail_hook');
-
         // get hooks
-        $hooks = $mailHookService->getHooksForService($service);
-
-        $eventHydrator = $this->get('swm.mail_hook.hydrator.fos_user');
+        $hooks = $this->mailHookService->getHooksForService($service);
 
         foreach ($hooks as $hook) {
-            $event = $eventHydrator->hydrate($hook, 'Swm\Bundle\MailHookBundle\Event\UserMailHookEvent');
+            $event = $this->fosUserHydrator->hydrate($hook, 'Swm\Bundle\MailHookBundle\Event\UserMailHookEvent');
             $this->eventDispatcher->dispatch($event, $hook->getEventDispatched());
         }
 
@@ -71,7 +80,7 @@ class MailHookController extends AbstractController
 
     private function checkSecret($secretSalt)
     {
-        if ($this->getParameter('swm_mailhook.secretsalt') !== $secretSalt) {
+        if ($this->parameterBag->get('swm_mailhook.secretsalt') !== $secretSalt) {
             throw new AccessDeniedHttpException("You are not welcome here");
         }
     }
