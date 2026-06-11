@@ -3,7 +3,6 @@
 namespace Swm\Bundle\MailHookBundle\Event;
 
 use Symfony\Contracts\EventDispatcher\Event;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class MailHookEvent extends Event implements HookEventInterface
 {
