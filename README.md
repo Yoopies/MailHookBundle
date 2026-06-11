@@ -112,15 +112,3 @@ Events listener provided
 ------------------------
 
 By default, a simple MailHookEvent is dispatched by the DefaultHydrator.
-But if you are using FosUserBundle, you can use the FosUserHydrator to use directly UserMailHookEvent which return directly the user entity associate on the email.
-
-
-If your using FosUserBundle
-----------------------------
-
-There's already a special route called "swm_mailhook_user_catcher_for_service":
-/{secretSalt}/{service}/catchuser
-
-It directly return a UserMailHookEvent where you can getUser().
-
-To see a basic exemple see this link : https://gist.github.com/ScullWM/8acea9c0e229ed76717f (Using JMS/di-extra-bundle optionnal)
