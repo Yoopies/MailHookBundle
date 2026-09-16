@@ -2,9 +2,8 @@
 
 namespace Swm\Bundle\MailHookBundle\Controller;
 
+use Swm\Bundle\MailHookBundle\Hydrator\HydratorInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Swm\Bundle\MailHookBundle\Hydrator\DefaultHydrator;
-use Swm\Bundle\MailHookBundle\Hydrator\FosUserHydrator;
 use Swm\Bundle\MailHookBundle\Service\MailHookService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -19,21 +18,18 @@ class MailHookController extends AbstractController
 {
     private EventDispatcherInterface $eventDispatcher;
     private MailHookService $mailHookService;
-    private DefaultHydrator $defaultHydrator;
-    private FosUserHydrator $fosUserHydrator;
+    private HydratorInterface $defaultHydrator;
     private ParameterBagInterface $parameterBag;
 
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         MailHookService $mailHookService,
-        DefaultHydrator $defaultHydrator,
-        FosUserHydrator $fosUserHydrator,
+        HydratorInterface $defaultHydrator,
         ParameterBagInterface $parameterBag
     ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->mailHookService = $mailHookService;
         $this->defaultHydrator = $defaultHydrator;
-        $this->fosUserHydrator = $fosUserHydrator;
         $this->parameterBag = $parameterBag;
     }
 
@@ -50,25 +46,6 @@ class MailHookController extends AbstractController
 
         foreach ($hooks as $hook) {
             $event = $this->defaultHydrator->hydrate($hook, 'Swm\Bundle\MailHookBundle\Event\MailHookEvent');
-            $this->eventDispatcher->dispatch($event, $hook->getEventDispatched());
-        }
-
-        return new Response();
-    }
-
-    /**
-     * @Route("/{secretSalt}/{service}/catchuser", name="swm_mailhook_user_catcher_for_service", methods={"POST", "GET"})
-     */
-    public function catchUserAction($secretSalt, $service = null)
-    {
-        // check if request is granted
-        $this->checkSecret($secretSalt);
-
-        // get hooks
-        $hooks = $this->mailHookService->getHooksForService($service);
-
-        foreach ($hooks as $hook) {
-            $event = $this->fosUserHydrator->hydrate($hook, 'Swm\Bundle\MailHookBundle\Event\UserMailHookEvent');
             $this->eventDispatcher->dispatch($event, $hook->getEventDispatched());
         }
 
