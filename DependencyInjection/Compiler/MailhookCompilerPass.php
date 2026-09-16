@@ -2,23 +2,25 @@
 
 namespace Swm\Bundle\MailHookBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Reference;
 
 class MailhookCompilerPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
-        foreach ($container->findTaggedServiceIds('swm.mailhook') as $id => $tag) {
-            $tag = array_pop($tag);
+        $provider = $container->getDefinition('swm.mail_hook.provider.api_service');
+
+        foreach ($container->findTaggedServiceIds('swm.mailhook') as $id => $tags) {
+            $tag = array_pop($tags);
 
             if (!isset($tag['alias'])) {
-                throw new \Exception('You should define an alias for all "swm.mailhook" tagged services');
+                throw new LogicException('You should define an alias for all "swm.mailhook" tagged services');
             }
 
-            $container->getDefinition('swm.mail_hook.provider.api_service')
-                ->addMethodCall('setApiService', array($tag['alias'], $container->getDefinition($id)));
+            $provider->addMethodCall('setApiService', [$tag['alias'], new Reference($id)]);
         }
     }
 }

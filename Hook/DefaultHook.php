@@ -2,6 +2,8 @@
 
 namespace Swm\Bundle\MailHookBundle\Hook;
 
+use Swm\Bundle\MailHookBundle\SwmMailHookEvent;
+
 class DefaultHook implements HookInterface
 {
     /**
@@ -36,7 +38,7 @@ class DefaultHook implements HookInterface
      * @param array  $metaData
      * @param string $eventDispatched
      */
-    public function __construct($event, $email, $service, $metaData = array(), $eventDispatched)
+    public function __construct($event, $email, $service, array $metaData = [], $eventDispatched = SwmMailHookEvent::MAILHOOK_OTHER)
     {
         $this->event           = $event;
         $this->email           = $email;

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         cacheDirectory=".phpunit.cache"
+         colors="true"
+         failOnDeprecation="true"
+         failOnPhpunitDeprecation="true"
+         failOnWarning="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true">
+    <testsuites>
+        <testsuite name="MailHookBundle">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <source ignoreSuppressionOfDeprecations="true">
+        <include>
+            <directory>ApiService</directory>
+            <directory>Controller</directory>
+            <directory>DependencyInjection</directory>
+            <directory>Event</directory>
+            <directory>Hook</directory>
+            <directory>Hydrator</directory>
+            <directory>Provider</directory>
+            <directory>Service</directory>
+            <file>SwmMailHookBundle.php</file>
+        </include>
+    </source>
+</phpunit>

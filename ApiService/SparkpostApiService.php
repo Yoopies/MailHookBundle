@@ -22,7 +22,7 @@ class SparkpostApiService extends BaseApiService
 
     /**
      * @param  array  $hook
-     * @return HookInterface
+     * @return HookInterface|null
      */
     private function bindHook(array $hook)
     {
@@ -30,7 +30,7 @@ class SparkpostApiService extends BaseApiService
         $event = $hook['msys']['message_event']['type'];
 
         if (!isset($this->eventAssoc[$event])) {
-            return;
+            return null;
         }
 
         return new DefaultHook($event, $email, 'mandrill', $hook, $this->eventAssoc[$event]);
@@ -47,6 +47,6 @@ class SparkpostApiService extends BaseApiService
 
         $sparkpostEvents = json_decode($this->request->getContent(), true);
 
-        return array_map([$this, 'bindHook'], $sparkpostEvents);
+        return array_values(array_filter(array_map([$this, 'bindHook'], $sparkpostEvents)));
     }
 }
