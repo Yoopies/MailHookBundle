@@ -4,7 +4,6 @@ namespace Swm\Bundle\MailHookBundle\Hydrator;
 
 use Swm\Bundle\MailHookBundle\Event\HookEventInterface;
 use Swm\Bundle\MailHookBundle\Hook\HookInterface;
-use Swm\Bundle\MailHookBundle\Hydrator\HydratorInterface;
 
 class DefaultHydrator implements HydratorInterface
 {
@@ -18,7 +17,7 @@ class DefaultHydrator implements HydratorInterface
         $hydratedEntity = new $entityName();
 
         if (!$hydratedEntity instanceof HookEventInterface) {
-            throw new LogicException("Can't hydrate this event");
+            throw new \LogicException("Can't hydrate this event");
         }
 
         $hydratedEntity->setEmail($apiService->getEmail());

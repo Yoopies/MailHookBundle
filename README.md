@@ -39,38 +39,34 @@ Add the package to your composer.json file
 "scullwm/mailhookbundle": "dev-master",
 ```
 
-Add this to app/AppKernel.php
+Requires PHP 8.2+ and Symfony 6.4 or 7.x.
+
+Add this to config/bundles.php
 ```php
 <?php
-    public function registerBundles()
-    {
-        $bundles = array(
-            ...
-            new Swm\Bundle\MailHookBundle\SwmMailHookBundle(),
-        );
 
-        ...
-
-        return $bundles;
-    }
+return [
+    // ...
+    Swm\Bundle\MailHookBundle\SwmMailHookBundle::class => ['all' => true],
+];
 ```
 
 Configuration
 -------------
 
-### 1) Edit app/config.yml
+### 1) Create config/packages/swm_mail_hook.yaml
 
 ```yaml
 swm_mail_hook:
     secretsalt: notSecret
 ```
 
-### 2) Edit app/routing.yml
+### 2) Create config/routes/swm_mail_hook.yaml
 
 ```yaml
 swm_mailhook_controller:
     resource: "@SwmMailHookBundle/Controller/"
-    type:     annotation
+    type:     attribute
     prefix:   /
 ```
 

@@ -8,12 +8,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class SwmMailHookBundle extends Bundle
 {
-    /**
-     * Build method.
-     *
-     * @param ContainerBuilder $container
-     */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new MailhookCompilerPass());
     }

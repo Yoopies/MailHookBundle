@@ -35,11 +35,13 @@ class MandrillApiService extends BaseApiService
      */
     public function bind()
     {
-        if (!$this->request->get('mandrill_events')) {
+        $mandrillEvents = $this->request->request->get('mandrill_events');
+
+        if (!$mandrillEvents) {
             throw new \Exception("Could not find data");
         }
 
-        $mandrillEvents = json_decode($this->request->get('mandrill_events'), true);
+        $mandrillEvents = json_decode($mandrillEvents, true);
 
         return array_map([$this, 'bindHook'], $mandrillEvents);
     }

@@ -29,6 +29,6 @@ class CampainmonitorApiService extends BaseApiService
     {
         $metaData = json_decode($this->request->getContent(), true);
 
-        return array_map(array($this, 'bindHook'), json_decode($metaData['Events']));
+        return array_map(array($this, 'bindHook'), json_decode($metaData['Events'], true));
     }
 }

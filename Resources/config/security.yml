@@ -1,5 +1,0 @@
-security:
-    firewalls:
-        user:
-            pattern: ^/webhook/%swm_mailhook.secretsalt%
-            anonymous: ~
