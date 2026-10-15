@@ -32,9 +32,14 @@ class SesApiService extends BaseApiService
             throw new \Exception('AWS SNS Require a subscription confirmation: '.$metaData['SubscribeURL']);
         }
 
+        // Without SNS raw message delivery, the SES notification is JSON-encoded in the envelope's "Message" field
+        if (isset($metaData['Type'], $metaData['Message']) && $metaData['Type'] === 'Notification' && is_string($metaData['Message'])) {
+            $metaData = json_decode($metaData['Message'], true);
+        }
+
         $hooks = [];
 
-        switch ($metaData['notificationType']) {
+        switch ($metaData['notificationType'] ?? null) {
             case self::SNS_BOUNCE:
                 $event = strtolower($metaData['bounce']['bounceType']).'_bounce';
                 foreach ($metaData['bounce']['bouncedRecipients'] as $recipient) {
